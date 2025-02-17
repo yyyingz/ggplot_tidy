@@ -1,0 +1,75 @@
+---
+title: "ggplot_tidy"
+author: "Ying Zhang"
+date: "2025-02-10"
+output: html_document
+---
+```{r}
+#| label: load-libs
+#| echo: false
+#| message: false
+library("tidyverse")
+```
+```{r}
+#| label: explore 
+
+glimpse(mtcars)
+head(mtcars)
+dim(mtcars)
+summary(mtcars)
+```
+
+```{r}
+#| label: some-plots
+
+mtcars |> 
+  ggplot() +
+  aes(x = disp, y = mpg)+
+  geom_point()
+
+mtcars |> 
+  ggplot() +
+  aes(x = factor(am), y = mpg)+
+  stat_summary(
+    fun.data = mean_sdl,
+    geom = 'pointrange'
+  )
+
+mtcars |> 
+  #add 'factor' to make categorical elements work
+  ggplot() +
+  aes(x = factor(am), y = mpg)+
+  geom_boxplot()
+```
+
+```{r}
+#| label: simple-transformations
+
+mtcars |> 
+  select(mpg, disp, am)
+
+#rename 'disp' as 'poo'
+mtcars |> 
+  select(mpg, poo = disp, am)
+
+# '=' assign
+mtcars |> 
+  select(mpg, poo = disp, am) |> 
+  filter(am == 1)
+
+mtcars |> 
+  select(mpg, poo = disp, am) |> 
+  filter(am == 1, mpg >= 23) |> 
+  mutate(
+    mpg_100 = mpg +100,
+    z_mpg = (mpg - mean(mpg)) / sd(mpg)
+    )
+
+mtcars |> 
+  group_by(am) |> 
+  summarise(
+    avg = mean(mpg),
+    sd = sd(mpg)
+    )
+```
+

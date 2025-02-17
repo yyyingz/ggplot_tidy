@@ -1,0 +1,168 @@
+---
+title: "ggplot_tidy"
+author: "Ying Zhang"
+date: "2025-02-10"
+output: html_document
+---
+```{r}
+#| label: load-libs
+#| echo: false
+#| message: false
+library("tidyverse")
+library("ds4ling")
+glimpse(test_scores_rm)
+```
+
+```{r}
+#test_scores_rm: the data frame
+cor(test_scores_rm$test1, test_scores_rm$test2)
+
+test_scores_rm |> 
+  ggplot() +
+  aes(x = test1, y = test2) +
+  geom_point()
+
+cor.test(test_scores_rm$test1, test_scores_rm$test2)
+```
+
+```{r}
+#| label: explore 
+
+glimpse(mtcars)
+head(mtcars)
+dim(mtcars)
+summary(mtcars)
+```
+
+```{r}
+#| label: some-plots
+
+mtcars |> 
+  ggplot() +
+  aes(x = disp, y = mpg)+
+  geom_point()
+
+mtcars |> 
+  ggplot() +
+  aes(x = factor(am), y = mpg)+
+  stat_summary(
+    fun.data = mean_sdl,
+    geom = 'pointrange'
+  )
+
+mtcars |> 
+  #add 'factor' to make categorical elements work
+  ggplot() +
+  aes(x = factor(am), y = mpg)+
+  geom_boxplot()
+```
+
+```{r}
+#| label: simple-transformations
+
+mtcars |> 
+  select(mpg, disp, am)
+
+#rename 'disp' as 'poo'
+mtcars |> 
+  select(mpg, poo = disp, am)
+
+# '=' assign
+mtcars |> 
+  select(mpg, poo = disp, am) |> 
+  filter(am == 1)
+
+mtcars |> 
+  select(mpg, poo = disp, am) |> 
+  filter(am == 1, mpg >= 23) |> 
+  mutate(
+    mpg_100 = mpg +100,
+    z_mpg = (mpg - mean(mpg)) / sd(mpg)
+    )
+
+mtcars |> 
+  group_by(am) |> 
+  summarise(
+    avg = mean(mpg),
+    sd = sd(mpg)
+    )
+```
+
+```{r}
+#select multiple columns with ":"
+mtcars |> 
+  select(mpg:drat)
+glimpse(mtcars)
+
+mtcars |> 
+select(disp, cyl, hp)
+
+mtcars |> 
+  select(am, gear, carb)
+
+mtcars |> 
+  select(am:carb)
+
+mtcars |> 
+  select(hello_world = mpg)
+
+mtcars |> 
+  select(mpg) |> 
+  filter(mpg > 14, mpg < 20) #the two criteria have to be separated
+  filter(mpg > 14 & mpg < 20) #the two ways above give the same result
+mtcars |> 
+  select(cyl) |> 
+  filter(cyl == 6)
+
+mtcars |> 
+  select(mpg, disp) |> 
+  filter(mpg > 20 | disp < 200)
+
+mtcars |> 
+  select(mpg, disp) |> 
+  filter(mpg > 20 & disp < 200)
+
+mtcars |> 
+  arrange(cyl, disp)
+
+mtcars |> 
+  arrange(desc(mpg))#desc() makes the data ordered from the highest to the lowest 
+
+mtcars |> 
+  select(mpg) |> 
+  mutate(mpg_x2 = mpg * 2)#mpg_x2 is the name of the new column 
+
+mtcars |> 
+  select(mpg) |> 
+  mutate(mpg_c = mpg - mean(mpg))
+#centering makes the mean zero
+
+mtcars |> 
+  select(mpg) |> 
+  mutate(value = if_else(condition = mpg > 18, true = "good", false = "bad"))
+
+mtcars |> 
+  select(mpg) |> 
+  mutate(
+    opinion = case_when (
+      mpg >= 20          ~ "good",
+      mpg <20 & mpg > 15 ~ "meh",
+      mpg <= 15          ~ "bad"
+    )
+) |> 
+  ggplot() +
+  aes(x = opinion, y = mpg, fill = opinion) +
+  geom_boxplot()
+
+#summarize() with group_by()
+mtcars |>  
+  summarise(avg = mean(mpg))
+
+mtcars |>  
+  group_by(cyl) |> 
+  summarise(avg = mean(mpg))
+
+mtcars |>  
+  group_by(cyl) |> 
+  summarise(avg = mean(mpg), std = sd(mpg), mn = min(mpg), mx = max(mpg))#don't want the column name to be the same as the function name
+```
