@@ -109,7 +109,7 @@ mtcars |>
 mtcars |> 
   select(mpg) |> 
   filter(mpg > 14, mpg < 20) #the two criteria have to be separated
-  filter(mpg > 14 & mpg < 20) #the two ways above give the same result
+  #filter(mpg > 14 & mpg < 20) #the two ways above give the same result
 mtcars |> 
   select(cyl) |> 
   filter(cyl == 6)
